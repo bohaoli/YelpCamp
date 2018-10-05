@@ -27,6 +27,12 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// A middleware for every route
+app.use(function(req, res, next){
+    res.locals.currentUser = req.user;
+    next();
+});
+
 app.get("/", function(req, res){
     res.render("landing");
 });
@@ -37,7 +43,10 @@ app.get("/campgrounds", function(req, res){
         if(err){
             console.log(err);
         }else{
-            res.render("campgrounds/index", {campgrounds: allCampgrounds});
+            res.render("campgrounds/index", 
+            {
+                campgrounds: allCampgrounds
+            });
         }
     });
 });
@@ -71,7 +80,10 @@ app.get("/campgrounds/:id", function(req, res){
         if(err){
             console.log(err);
         }else{
-            res.render("campgrounds/show", {campground: foundCampground});
+            res.render("campgrounds/show", 
+            {
+                campground: foundCampground
+            });
         }
     });
 });
@@ -82,7 +94,10 @@ app.get("/campgrounds/:id/comments/new", isLoggedIn, function(req, res){
         if(err){
             console.log(err);
         }else{
-            res.render("comments/new", {campground: foundCampground});
+            res.render("comments/new", 
+            {
+                campground: foundCampground
+            });
         }
     });
 });
