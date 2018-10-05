@@ -1,39 +1,16 @@
 var express    = require("express"),
     app        = express(),
     bodyParser = require("body-parser"),
-    mongoose   = require("mongoose")
+    mongoose   = require("mongoose"),
+    Campground = require("./models/campground"),
+    Comment    = require("./models/comment"),
+    seedDB     = require("./seeds")
 
 mongoose.connect("mongodb://localhost/yelp_camp", { useNewUrlParser: true});
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
+seedDB();
 
-//SCHEMA SETUP
-var campgroundSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String
-});
-
-var Campground = mongoose.model("Campground", campgroundSchema);
-
-// var campgrounds = [
-//         {name: "Salmon Creek", image: "https://pixabay.com/get/e83db50a21f4073ed1584d05fb1d4e97e07ee3d21cac104496f8c27da3ebbdbc_340.jpg"},
-//         {name: "Granite Hill", image: "https://pixabay.com/get/e83db50929f0033ed1584d05fb1d4e97e07ee3d21cac104496f8c27da3ebbdbc_340.jpg"},
-//         {name: "Mountain Goat's Rest", image: "https://pixabay.com/get/e83db40e28fd033ed1584d05fb1d4e97e07ee3d21cac104496f8c27da3ebbdbc_340.jpg"}
-// ];
-
-// Campground.create({
-//     name: "Salmon Creek", 
-//     image: "https://pixabay.com/get/ea36b70928f21c22d2524518b7444795ea76e5d004b014429df3c87ea5edbc_340.jpg",
-//     description: "wertyuioasdfghjklxcvbnm,"
-//     }, 
-//     function(err, campsite){
-//         if(err){
-//             console.log(err);
-//         }else{
-//             console.log(campsite);
-//         }
-//     });
 
 
 app.get("/", function(req, res){
@@ -89,7 +66,7 @@ app.get("/campgrounds/:id", function(req, res){
     // });
     //Also works, but we will use findById, or we have to use a for loop
     //in show.ejs
-    Campground.findById(req.params.id, function(err, foundCampground){
+    Campground.findById(req.params.id).populate("comments").exec(function(err, foundCampground){
         if(err){
             console.log(err);
         }else{
